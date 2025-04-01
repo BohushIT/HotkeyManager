@@ -1,0 +1,157 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="using:Avalonia.Controls"
+		Title="HotkeyManager"
+		xmlns:vm="using:HotkeyManager.ViewModels"
+		Width="608" Height="400"
+        x:Class="HotkeyManager.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+		CanResize="False" 
+		Icon="/Assets/MainIcon.ico">
+
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition Width="458"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="380"/>
+			<RowDefinition Height="20"/>
+		</Grid.RowDefinitions>
+
+		<TextBlock  Text="{Binding Status}" Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Center"/>
+
+
+
+			<StackPanel Orientation="Vertical" Grid.Column="0"
+						HorizontalAlignment="Stretch" Background="#EFF4F7" >
+				
+				<Button Content="Додати" Command="{Binding AddHotkeyCommand}" 
+						Margin="5" Width="100" HorizontalAlignment="Center"
+						
+						 />
+						
+				<Button Content="Видалити" Command="{Binding RemoveHotkeyCommand}"	
+						Margin="5" Width="100" HorizontalAlignment="Center" 
+						
+						 />
+				<Button Content="Редагувати" Command="{Binding EditHotkeyCommand}"
+						Margin="5" Width="100" HorizontalAlignment="Center"
+						
+					     />				
+			</StackPanel>
+
+			<!-- Таблиця гарячих клавіш -->
+		<DataGrid Grid.Column="1"
+          ItemsSource="{Binding Hotkeys}"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          HorizontalAlignment="Stretch"
+          GridLinesVisibility="All"
+				  Margin="4"
+				  SelectionMode="Single"
+          SelectedItem="{Binding SelectedHotkey}">
+			<DataGrid.Styles>
+				<!-- Стиль для DataGridRow -->
+				<Style Selector="DataGridRow">
+					<Setter Property="Background" Value="Transparent"/>
+					<!-- За замовчуванням прозорий -->
+					<Setter Property="BorderBrush" Value="Gray"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter	Property="Margin" Value="0,3,0,0"/>
+					<Setter Property="Transitions">
+						<Transitions>
+							<BrushTransition Property="Background"
+											 Duration="0:0:0.2"/>
+						</Transitions>
+					</Setter>
+				</Style>
+
+				<!-- Стиль для вибраного рядка -->
+				<Style Selector="DataGridRow:selected">
+					<Setter Property="Background" Value="#d1e9e9"/>
+					<!-- Колір для вибраного рядка -->
+				</Style>
+				<!-- Стиль для DataGridRow при наведенні -->
+				<Style Selector="DataGridRow:pointerover">
+					<Setter Property="Background" Value="#E6F0FA"/>
+					<!-- Колір при наведенні -->
+				</Style>
+				<Style Selector="DataGridRow:selected:pointerover">
+					<Setter Property="Background" Value="#d1e9e9"/>
+					<!-- Зберігаємо Aqua -->
+				</Style>
+				<!-- Стиль для заголовків -->
+				<Style Selector="DataGridColumnHeader">
+					<Setter Property="Background" Value="#f0f8ff"/>
+					<Setter Property="BorderBrush" Value="Gray"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="Padding" Value="5"/>
+					<Setter Property="Foreground" Value="Black"/>
+					<Setter Property="Template">
+						<ControlTemplate>
+							<Border Background="{TemplateBinding Background}"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									BorderThickness="{TemplateBinding BorderThickness}"
+									Padding="{TemplateBinding Padding}">
+								<TextBlock Text="{TemplateBinding Content}"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center"
+										 TextAlignment="Center"/>
+							</Border>
+						</ControlTemplate>
+					</Setter>
+				</Style>
+				<!-- Глобальний стиль для вмісту комірок -->
+				<Style Selector="DataGridCell">
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="BorderBrush" Value="Gray"/>
+					<Setter Property="BorderThickness" Value="0,0,1,0"/>
+					<Setter Property="Padding" Value="5"/>
+					
+					<Setter Property="Template">
+						
+						<ControlTemplate>
+							<Border Background="{TemplateBinding Background}"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									BorderThickness="{TemplateBinding BorderThickness}"
+									Padding="{TemplateBinding Padding}">
+								<ContentPresenter Content="{TemplateBinding Content}"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												  />
+							</Border>
+						</ControlTemplate>
+					</Setter>
+				</Style>
+			</DataGrid.Styles>
+
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Модифікатор"
+									Binding="{Binding Modifier}"
+									Width="130"
+									CanUserResize="True"
+									CanUserSort="False"/>
+				<DataGridTextColumn Header="Клавіша"
+									Binding="{Binding KeyString}"
+									Width="100"
+									CanUserResize="True"
+									CanUserSort="False"/>
+				<DataGridTextColumn Header="Програма"
+									Binding="{Binding ProgramPath}"
+									Width="220"
+									CanUserResize="True"
+									CanUserSort="False" 
+									>
+					
+				</DataGridTextColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+
+		
+	
+	</Grid>
+</Window>
