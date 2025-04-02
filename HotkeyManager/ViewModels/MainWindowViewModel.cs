@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
+using HotkeyManager.Commands;
 
 //dotnet publish -c Release -r linux-x64 --self-contained
 namespace HotkeyManager.ViewModels
@@ -256,18 +257,6 @@ namespace HotkeyManager.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public class RelayCommand : ICommand
-        {
-            private readonly Func<Task> _execute;
-            public event EventHandler? CanExecuteChanged;
-
-            public RelayCommand(Func<Task> execute)
-            {
-                _execute = execute;
-            }
-
-            public bool CanExecute(object? parameter) => true;
-            public async void Execute(object? parameter) => await _execute();
-        }
+       
     }
 }

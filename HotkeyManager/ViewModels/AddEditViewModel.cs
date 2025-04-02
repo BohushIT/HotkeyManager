@@ -11,6 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using HotkeyManager.Commands;
+
 
 namespace HotkeyManager.ViewModels
 {
@@ -111,7 +113,7 @@ namespace HotkeyManager.ViewModels
         {
             _window = window;
             LoadModifiers(); 
-            SelectProgramCommand = new AsyncRelayCommand(SelectProgramAsync);
+            SelectProgramCommand = new RelayCommand(SelectProgramAsync);
             SaveCommand = new RelayCommand(Save); 
             CancelCommand = new RelayCommand(Cancel); 
 
@@ -235,44 +237,6 @@ namespace HotkeyManager.ViewModels
         }
 
        
-        private class AsyncRelayCommand : ICommand
-        {
-            private readonly Func<Task> _executeAsync;
-            private bool _isExecuting;
-
-            public AsyncRelayCommand(Func<Task> executeAsync)
-            {
-                _executeAsync = executeAsync;
-            }
-
-            public event EventHandler CanExecuteChanged;
-
-            public bool CanExecute(object parameter) => !_isExecuting;
-
-            public async void Execute(object parameter)
-            {
-                if (_isExecuting) return;
-                _isExecuting = true;
-                try
-                {
-                    await _executeAsync();
-                }
-                finally
-                {
-                    _isExecuting = false;
-                    CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
-
-
-        private class RelayCommand : ICommand
-        {
-            private readonly Action _execute;
-            public RelayCommand(Action execute) => _execute = execute;
-            public event EventHandler CanExecuteChanged;
-            public bool CanExecute(object parameter) => true;
-            public void Execute(object parameter) => _execute();
-        }
+        
     }
 }
