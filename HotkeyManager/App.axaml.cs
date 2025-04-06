@@ -21,7 +21,7 @@ namespace HotkeyManager
         private MainWindow _mainWindow;
         private IServiceProvider _serviceProvider;
 
-        // Команди для трею
+
         public ICommand OpenCommand { get; }
         public ICommand ExitCommand { get; }
 
@@ -43,6 +43,16 @@ namespace HotkeyManager
                 _serviceProvider = ConfigureServices();
                 _mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
                 desktop.MainWindow = _mainWindow;
+
+                desktop.ShutdownRequested += (sender, e) =>
+                {
+                    if (_mainWindow.DataContext is MainWindowViewModel viewModel)
+                    {
+                        viewModel.Dispose();
+                        File.AppendAllText("hotkeymanager_log.txt", " Очищення при завершенні програми ShutdownRequested \n");
+                    }
+                };
+
                 var trayIcon = new TrayIcon
                 {
                     Icon = new WindowIcon("Assets/MainIcon.ico"),
