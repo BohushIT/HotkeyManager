@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MsBox.Avalonia.Dto;
+using HotkeyManager.Services.Interfaces;
 
 namespace HotkeyManager.Services
 {

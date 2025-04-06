@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using HotkeyManager.Models;
-using HotkeyManager.Repositories;
 using HotkeyManager.Services;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
@@ -20,11 +19,16 @@ using System.Windows.Input;
 using static System.Net.Mime.MediaTypeNames;
 using System.IO;
 using HotkeyManager.Commands;
+using HotkeyManager.Repositories.Interfaces;
+using HotkeyManager.Services.Interfaces;
 
 //dotnet publish -c Release -r linux-x64 --self-contained
+//dotnet publish HotkeyManager.csproj -c Release -r linux-x64 --self-contained -o Release
+
+
 namespace HotkeyManager.ViewModels
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly IProcessService _processService;
         private string _status = "Очікую натискання клавіш...";
@@ -33,6 +37,7 @@ namespace HotkeyManager.ViewModels
         private ModifierMask _activeModifiers = ModifierMask.None; 
         private Hotkey _selectedHotkey;
         private readonly IWindowService _windowService;
+        private bool _disposed = false;
         public MainWindowViewModel( IHotkeyRepository repository, IWindowService windowService, IProcessService processService)
         {
            
@@ -53,6 +58,11 @@ namespace HotkeyManager.ViewModels
 
             
         }
+
+        public MainWindowViewModel()
+        {
+        }
+
         private async Task InitializeAsync()
         {
             try
@@ -246,17 +256,41 @@ namespace HotkeyManager.ViewModels
             };
         }
         
-        public void Dispose()
-        {
-            GlobalHookService.Instance.KeyPressed -= OnKeyPressed;
-            GlobalHookService.Instance.KeyReleased -= OnKeyReleased;
-            GlobalHookService.Instance.Dispose();
-        }
+        //public void Cleanup()
+        //{
+        //    File.AppendAllText("hotkeymanager_log.txt", " Початок очистки\n");
+        //    GlobalHookService.Instance.KeyPressed -= OnKeyPressed;
+        //    GlobalHookService.Instance.KeyReleased -= OnKeyReleased;
+        //    GlobalHookService.Instance.Dispose();
+        //    File.AppendAllText("hotkeymanager_log.txt", " кінець  очистки\n"); ;
+        //}
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-       
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                try
+                {
+                    File.AppendAllText("hotkeymanager_log.txt", " Початок очистки\n");
+                    if (GlobalHookService.Instance != null)
+                    {
+                        GlobalHookService.Instance.KeyPressed -= OnKeyPressed;
+                        GlobalHookService.Instance.KeyReleased -= OnKeyReleased;
+                        GlobalHookService.Instance.Dispose();
+                    }
+                    File.AppendAllText("hotkeymanager_log.txt", " Кінець очистки\n");
+                }
+                catch (Exception ex)
+                {
+                    File.AppendAllText("hotkeymanager_log.txt", $" Помилка в Dispose: {ex.Message}\n");
+                }
+                _disposed = true;
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotkeyManager.Repositories
+namespace HotkeyManager.Repositories.Interfaces
 {
     public interface IHotkeyRepository
     {

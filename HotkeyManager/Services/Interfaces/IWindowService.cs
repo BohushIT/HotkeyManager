@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotkeyManager.Services
+namespace HotkeyManager.Services.Interfaces
 {
     public interface IWindowService
     {
-        
+
         Task<Hotkey> ShowAddEditDialog(Hotkey hotkeyToEdit = null);
         Task<bool> ShowConfirmationDialog(string title, string message);
     }

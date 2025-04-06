@@ -18,10 +18,10 @@ namespace HotkeyManager.ViewModels
 {
     public class AddEditViewModel : INotifyPropertyChanged
     {
-        // Колекція модифікаторів для ComboBox
+      
         public ObservableCollection<ModifierMask> Modifiers { get; } = new ObservableCollection<ModifierMask>();
         private readonly Window _window;
-        // Вибраний модифікатор
+
         private ModifierMask _selectedModifier;
         public ModifierMask SelectedModifier
         {
@@ -33,7 +33,6 @@ namespace HotkeyManager.ViewModels
             }
         }
 
-        // Введений символ клавіші
         private string _keyText;
         public string KeyText
         {
@@ -68,7 +67,6 @@ namespace HotkeyManager.ViewModels
         }
 
         private bool _errorMassageVisible;
-
 
         public bool ErrorMessageVisible
         {

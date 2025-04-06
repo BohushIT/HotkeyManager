@@ -1,21 +1,27 @@
-using Avalonia;
+п»їusing Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using HotkeyManager.Repositories;
+using HotkeyManager.Repositories.Interfaces;
 using HotkeyManager.Services;
 using HotkeyManager.ViewModels;
-using System.Windows.Input;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
+using System.Windows.Input;
 using HotkeyManager.Commands;
+using HotkeyManager.Services.Interfaces;
 
 namespace HotkeyManager
 {
     public partial class App : Application
     {
         private MainWindow _mainWindow;
+        private IServiceProvider _serviceProvider;
 
-        // Команди для трею
+        // РљРѕРјР°РЅРґРё РґР»СЏ С‚СЂРµСЋ
         public ICommand OpenCommand { get; }
         public ICommand ExitCommand { get; }
 
@@ -34,51 +40,68 @@ namespace HotkeyManager
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                _mainWindow = new MainWindow();
-                var repository = new JsonHotkeyRepository();
-                var windowService = new WindowService();
-                var processService = new ProcessService();
-                var viewModel = new MainWindowViewModel( repository, windowService, processService);
-                _mainWindow.DataContext = viewModel;
+                _serviceProvider = ConfigureServices();
+                _mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
                 desktop.MainWindow = _mainWindow;
-
-                // Створюємо TrayIcon
                 var trayIcon = new TrayIcon
                 {
-                    Icon = new WindowIcon("D:\\TestLinux\\HotkeyManager\\HotkeyManager\\Assets\\MainIcon.ico"),
+                    Icon = new WindowIcon("Assets/MainIcon.ico"),
                     ToolTipText = "Hotkey Manager",
                     Menu = new NativeMenu
                     {
-                        new NativeMenuItem { Header = "Відкрити програму", Command = OpenCommand },
-                        new NativeMenuItem { Header = "Закрити програму", Command = ExitCommand }
+                        new NativeMenuItem { Header = "Р’С–РґРєСЂРёС‚Рё РїСЂРѕРіСЂР°РјСѓ", Command = OpenCommand },
+                        new NativeMenuItem { Header = "Р—Р°РєСЂРёС‚Рё РїСЂРѕРіСЂР°РјСѓ", Command = ExitCommand }
                     }
                 };
 
-                // Встановлюємо TrayIcon
+
                 TrayIcon.SetIcons(this, new TrayIcons { trayIcon });
             }
+
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
+            services.AddScoped<IHotkeyRepository, JsonHotkeyRepository>();
+            services.AddScoped<IWindowService, WindowService>(); 
+            services.AddScoped<IProcessService, ProcessService>(); 
+            services.AddScoped<MainWindowViewModel>();
+            services.AddTransient<MainWindow>(provider => new MainWindow
+            {
+                DataContext = provider.GetRequiredService<MainWindowViewModel>()
+            });
+
+            return services.BuildServiceProvider();
         }
 
         private void OpenApplication()
         {
-            if (_mainWindow == null) return; // Захист від null
+            if (_mainWindow == null) return;
 
             if (_mainWindow.WindowState == WindowState.Minimized)
             {
-                _mainWindow.WindowState = WindowState.Normal; // Розгортаємо, якщо згорнуте
+                _mainWindow.WindowState = WindowState.Normal;
             }
 
             if (_mainWindow.IsVisible)
             {
-                _mainWindow.Activate(); // Активуємо, якщо вже видно
+                _mainWindow.Activate();
             }
             else
             {
-                _mainWindow.Show(); // Показуємо, якщо приховано
+                _mainWindow.Show();
             }
 
-            // Додатково: Явно фокусуємо вікно
             _mainWindow.BringIntoView();
         }
 
@@ -89,7 +112,5 @@ namespace HotkeyManager
                 desktop.Shutdown();
             }
         }
-
-        
     }
 }

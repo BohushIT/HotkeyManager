@@ -1,5 +1,7 @@
 ﻿using Avalonia.Media.TextFormatting.Unicode;
 using HotkeyManager.Models;
+using HotkeyManager.Repositories.Interfaces;
+using HotkeyManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,20 +18,9 @@ namespace HotkeyManager.Repositories
     {
         private readonly string _filePath;
 
-        public JsonHotkeyRepository()
+        public JsonHotkeyRepository(IConfigurationService configurationService)
         {
-            // Отримуємо стандартну директорію для даних програми
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-            // Додаємо назву додатку та ім’я файлу
-            _filePath = Path.Combine(appDataPath, "HotkeyManager", "hotkeys.json");
-
-            // Створюємо директорію, якщо її немає
-            string? directory = Path.GetDirectoryName(_filePath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            _filePath = configurationService.GetJsonFilePath();
         }
 
         public async Task SaveAsync(ObservableCollection<Hotkey> hotkeys)

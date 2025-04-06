@@ -63,6 +63,7 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -178,7 +179,7 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
-
+Release/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml

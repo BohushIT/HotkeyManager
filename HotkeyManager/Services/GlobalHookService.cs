@@ -1,6 +1,7 @@
 ﻿using SharpHook;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,7 @@ namespace HotkeyManager.Services
             _hook.KeyPressed -= Hook_KeyPressed;
             _hook.KeyReleased -= Hook_KeyReleased;
             _hook.Dispose();
+            Debug.WriteLine("Все очистилось");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace HotkeyManager.Services
+﻿namespace HotkeyManager.Services.Interfaces
 {
     public interface IProcessService
     {
