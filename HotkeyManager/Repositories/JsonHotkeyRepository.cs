@@ -22,13 +22,11 @@ namespace HotkeyManager.Repositories
         {
             _filePath = configurationService.GetJsonFilePath();
         }
-
         public async Task SaveAsync(ObservableCollection<Hotkey> hotkeys)
         {
             string json = JsonSerializer.Serialize(hotkeys, new JsonSerializerOptions { WriteIndented= true});
            await File.WriteAllTextAsync(_filePath, json);
         }
-
         public async Task<ObservableCollection<Hotkey>> LoadAsync()
         {
             if (!File.Exists(_filePath))
@@ -39,7 +37,6 @@ namespace HotkeyManager.Repositories
             string json = await File.ReadAllTextAsync(_filePath);
             return JsonSerializer.Deserialize<ObservableCollection<Hotkey>>(json) ?? new ObservableCollection<Hotkey>();
         }
-
         public async Task AddHotkeyAsync(Hotkey hotkey)
         {
             var hotkeys = await LoadAsync();
@@ -69,7 +66,6 @@ namespace HotkeyManager.Repositories
             }
 
         }
-
         public async Task EditHotKeyAsync(Hotkey oldHotkey, Hotkey newHotkey)
         {
             var hotkeys = await LoadAsync();
@@ -81,5 +77,21 @@ namespace HotkeyManager.Repositories
                 await SaveAsync(hotkeys);
             }
         }
+        public async Task<List<Hotkey>> GetAllHotkeysAsync() 
+        {
+            if (!File.Exists(_filePath)) 
+            {
+                return new List<Hotkey> ();
+            }
+            try
+            {
+                string json = File.ReadAllText(_filePath);
+                var hotkeys = JsonSerializer.Deserialize<List<Hotkey>>(json);
+                return hotkeys ?? new List<Hotkey>();
+            }
+            catch (Exception ex) { return new List<Hotkey>(); }
+        }
+
+        
     }
 }

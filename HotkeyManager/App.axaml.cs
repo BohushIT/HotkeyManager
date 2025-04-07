@@ -90,6 +90,7 @@ namespace HotkeyManager
             {
                 DataContext = provider.GetRequiredService<MainWindowViewModel>()
             });
+            services.AddTransient<AddEditViewModel>();
 
             return services.BuildServiceProvider();
         }

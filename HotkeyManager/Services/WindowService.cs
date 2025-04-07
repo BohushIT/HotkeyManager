@@ -12,23 +12,42 @@ using System.Text;
 using System.Threading.Tasks;
 using MsBox.Avalonia.Dto;
 using HotkeyManager.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HotkeyManager.Services
 {
     public class WindowService : IWindowService
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public WindowService(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public async Task<Hotkey> ShowAddEditDialog(Hotkey hotkeyToEdit = null)
         {
+            var viewModel = _serviceProvider.GetRequiredService<AddEditViewModel>();
+            viewModel.Initialize(hotkeyToEdit);
+
             var window = new AddEditWindow();
-            var viewModel = new AddEditViewModel(window, hotkeyToEdit); // Передаємо window і hotkeyToEdit
+          
             window.DataContext = viewModel;
 
             Hotkey result = null;
-            viewModel.HotkeySaved += (sender, hotkey) => result = hotkey;
+            bool shouldClose = false;
+            viewModel.HotkeySaved += (sender, hotkey) =>
+            {
+                result = hotkey;
+
+                if (viewModel.ShouldClose) 
+                {
+                    window.Close();
+                }
+            };
 
             var parent = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (parent == null) return null;
-
             await window.ShowDialog(parent);
             return result;
         }

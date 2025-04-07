@@ -12,15 +12,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using HotkeyManager.Commands;
+using HotkeyManager.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.IO;
 
 
 namespace HotkeyManager.ViewModels
 {
     public class AddEditViewModel : INotifyPropertyChanged
     {
-      
+        private readonly IHotkeyRepository _hotkeyRepository;
         public ObservableCollection<ModifierMask> Modifiers { get; } = new ObservableCollection<ModifierMask>();
-        private readonly Window _window;
+
 
         private ModifierMask _selectedModifier;
         public ModifierMask SelectedModifier
@@ -32,7 +37,6 @@ namespace HotkeyManager.ViewModels
                 OnPropertyChanged();
             }
         }
-
         private string _keyText;
         public string KeyText
         {
@@ -54,7 +58,6 @@ namespace HotkeyManager.ViewModels
                 OnPropertyChanged(nameof(KeyText));
             }
         }
-
         private bool _runMultipleInstances;
         public bool RunMultipleInstances 
         {
@@ -65,9 +68,7 @@ namespace HotkeyManager.ViewModels
                 OnPropertyChanged();
             }
         }
-
         private bool _errorMassageVisible;
-
         public bool ErrorMessageVisible
         {
 
@@ -99,7 +100,7 @@ namespace HotkeyManager.ViewModels
                 OnPropertyChanged();
             }
         }
-
+        public bool ShouldClose { get; private set; }
         public Hotkey Result { get; private set; }
         public event EventHandler<Hotkey> HotkeySaved;
     
@@ -107,23 +108,50 @@ namespace HotkeyManager.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AddEditViewModel(Window window, Hotkey hotkeyToEdit = null)
+        public AddEditViewModel( IHotkeyRepository hotkeyRepository)
         {
-            _window = window;
+            _hotkeyRepository = hotkeyRepository;
             LoadModifiers(); 
             SelectProgramCommand = new RelayCommand(SelectProgramAsync);
-            SaveCommand = new RelayCommand(Save); 
-            CancelCommand = new RelayCommand(Cancel); 
-
+            SaveCommand = new RelayCommand(SaveAsync); 
+            CancelCommand = new RelayCommand(Cancel);
+  
+        }
+        public void Initialize(Hotkey hotkeyToEdit = null)
+        {
             if (hotkeyToEdit != null)
             {
                 SelectedModifier = hotkeyToEdit.Modifier;
-                KeyText = hotkeyToEdit.Key.ToString().Substring(2); 
+                KeyText = hotkeyToEdit.Key.ToString().Substring(2);
                 ProgramPath = hotkeyToEdit.ProgramPath;
                 RunMultipleInstances = hotkeyToEdit.RunMultipleInstances;
             }
+            else
+            {                
+                SelectedModifier = ModifierMask.None;
+                KeyText = string.Empty;
+                ProgramPath = string.Empty;
+                RunMultipleInstances = false;
+            }
         }
+        public async Task<bool> HasDuplicateCombination()
+        {          
+            var hotkeys = await _hotkeyRepository.GetAllHotkeysAsync();
 
+            KeyCode newKey = KeyCodeFromChar();
+            ModifierMask newModifier = SelectedModifier;
+
+            bool hasDuplicate = hotkeys.Any(hotkey =>
+                hotkey.Modifier == newModifier &&
+                hotkey.Key == newKey);
+            if (hasDuplicate) 
+            {
+                ShouldClose = false;
+                ErrorMessageVisible = true;
+                ErrorMessage = "Така комбінація уже є"; 
+            }
+            return hasDuplicate;
+        }
 
         private void LoadModifiers()
         {
@@ -137,7 +165,6 @@ namespace HotkeyManager.ViewModels
 
             SelectedModifier = ModifierMask.None;
         }
-
 
         private async Task SelectProgramAsync()
         {
@@ -159,6 +186,7 @@ namespace HotkeyManager.ViewModels
             {
                 ProgramPath = result[0];
             }
+            
         }
 
         public KeyCode KeyCodeFromChar()
@@ -170,61 +198,78 @@ namespace HotkeyManager.ViewModels
 
             char c = char.ToUpper(KeyText[0]); 
 
-            // Перетворюємо букви A-Z у відповідні KeyCode
             if (c >= 'A' && c <= 'Z')
             {
-                return (KeyCode)((int)KeyCode.VcA + (c - 'A')); // Зміщення від VcA
+                return (KeyCode)((int)KeyCode.VcA + (c - 'A')); 
             }
 
-            // Перетворюємо цифри 0-9 у відповідні KeyCode
             if (c >= '0' && c <= '9')
             {
-                return (KeyCode)((int)KeyCode.Vc0 + (c - '0')); // Зміщення від Vc0
+                return (KeyCode)((int)KeyCode.Vc0 + (c - '0')); 
             }
 
-            // Повертаємо Unknown для непідтримуваних символів
             return KeyCode.VcUndefined;
         }
 
-        
-        private void Save()
+        private async Task SaveAsync()
         {
-            if (!string.IsNullOrEmpty(KeyText))
+            try
             {
-                KeyCode key = KeyCodeFromChar();
-                if (string.IsNullOrEmpty(ProgramPath))
+                ShouldClose = true;
+                if (!string.IsNullOrEmpty(KeyText))
                 {
-                  Result = null;
-                  HotkeySaved?.Invoke(this, null); 
-                  ErrorMessageVisible = true;
-                  ErrorMessage = $"Оберіть програму";
-                  return;
-                    
+                    KeyCode key = KeyCodeFromChar();
+                    if (string.IsNullOrEmpty(ProgramPath))
+                    {
+                        Result = null;
+                        ShouldClose = false;
+                        HotkeySaved?.Invoke(this, null);
+                        ErrorMessageVisible = true;
+                        ErrorMessage = "Оберіть програму";
+
+                        return;
+                    }
+                    if (SelectedModifier == ModifierMask.None)
+                    {
+                        Result = null;
+                        ShouldClose = false;
+                        HotkeySaved?.Invoke(this, null);
+                        ErrorMessageVisible = true;
+                        ErrorMessage = "Оберіть модифікатор";
+                        return;
+                    }
+
+                    if (await HasDuplicateCombination())
+                    {
+                        Result = null;
+                        HotkeySaved?.Invoke(this, null);
+                        return;
+                    }
+
+                    Result = new Hotkey(0, SelectedModifier, key, ProgramPath, RunMultipleInstances);
+                    HotkeySaved?.Invoke(this, Result);
                 }
-                if (SelectedModifier == ModifierMask.None)
+                else
                 {
-                  Result = null;
-                  HotkeySaved?.Invoke(this, null); 
-                  ErrorMessageVisible = true;
-                  ErrorMessage = $"Оберіть модифікатор";
-                  return;
+                    ErrorMessageVisible = true;
+                    ErrorMessage = "Спочатку введи букву";
                 }
-                Result = new Hotkey(0, SelectedModifier, key, ProgramPath, RunMultipleInstances);
-                HotkeySaved?.Invoke(this, Result); 
-                _window.Close();
             }
-            else {
+            catch (Exception ex)
+            {
                 ErrorMessageVisible = true;
-                ErrorMessage = $"Спочатку введи букву";
+                ErrorMessage = $"Помилка при збереженні: {ex.Message}";
+                File.AppendAllText("hotkeymanager_log.txt", $"Помилка в SaveAsync: {ex.Message}\n");
             }
         }
 
-        
         private void Cancel()
         {
             Result = null;
+            ShouldClose = true;
             HotkeySaved?.Invoke(this, null);
-            _window.Close();
+            ErrorMessageVisible = false;
+            ErrorMessage = string.Empty;
 
         }
 

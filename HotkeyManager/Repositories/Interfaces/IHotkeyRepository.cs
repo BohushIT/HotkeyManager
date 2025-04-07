@@ -15,5 +15,6 @@ namespace HotkeyManager.Repositories.Interfaces
         Task RemoveHotkeyAsync(Hotkey hotkey);
         Task EditHotKeyAsync(Hotkey oldHotkey, Hotkey newHotkey);
         Task<ObservableCollection<Hotkey>> LoadAsync();
+        Task<List<Hotkey>> GetAllHotkeysAsync();
     }
 }

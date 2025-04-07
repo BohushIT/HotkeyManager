@@ -54,15 +54,12 @@ namespace HotkeyManager.ViewModels
             AddHotkeyCommand = new RelayCommand(async () => await AddHotkeyAsync());
             RemoveHotkeyCommand = new RelayCommand(async () => await RemoveHotkeyAsync());
             EditHotkeyCommand = new RelayCommand(async () => await EditHotkeyAsync());
-
-
-            
+   
         }
 
         public MainWindowViewModel()
         {
         }
-
         private async Task InitializeAsync()
         {
             try
@@ -211,12 +208,7 @@ namespace HotkeyManager.ViewModels
                 }
             }
         }
-        // Не використовується поки 
-        private void Exit()
-        {
-            _processService.ShutdownAll();
-           
-        }
+        
         private void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
         {
             
@@ -255,21 +247,12 @@ namespace HotkeyManager.ViewModels
                 _ => ModifierMask.None
             };
         }
-        
-        //public void Cleanup()
-        //{
-        //    File.AppendAllText("hotkeymanager_log.txt", " Початок очистки\n");
-        //    GlobalHookService.Instance.KeyPressed -= OnKeyPressed;
-        //    GlobalHookService.Instance.KeyReleased -= OnKeyReleased;
-        //    GlobalHookService.Instance.Dispose();
-        //    File.AppendAllText("hotkeymanager_log.txt", " кінець  очистки\n"); ;
-        //}
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
         public void Dispose()
         {
             if (!_disposed)
