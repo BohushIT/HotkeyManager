@@ -135,7 +135,7 @@
 				<Menu Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
 					<MenuItem Header="...">
 						<MenuItem Header="Вибрати програму або файл" Command="{Binding SelectFileCommand}"/>
-						<MenuItem Header="Вибрати команду" Command="{Binding SelectFileCommand}"/>
+						<MenuItem Header="Вибрати системну утиліту" Command="{Binding SelectFileCommand}" IsEnabled="False"/>
 					</MenuItem>
 				</Menu>
 

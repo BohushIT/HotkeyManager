@@ -26,7 +26,7 @@ namespace HotkeyManager.ViewModels
         private readonly IHotkeyRepository _hotkeyRepository;
         public ObservableCollection<ModifierMask> Modifiers { get; } = new ObservableCollection<ModifierMask>();
 
-
+        private int _editingHotkeyId;
         private ModifierMask _selectedModifier;
         public ModifierMask SelectedModifier
         {
@@ -125,6 +125,7 @@ namespace HotkeyManager.ViewModels
                 KeyText = hotkeyToEdit.Key.ToString().Substring(2);
                 ProgramPath = hotkeyToEdit.ProgramPath;
                 RunMultipleInstances = hotkeyToEdit.RunMultipleInstances;
+                _editingHotkeyId = hotkeyToEdit.Id;
             }
             else
             {                
@@ -132,6 +133,7 @@ namespace HotkeyManager.ViewModels
                 KeyText = string.Empty;
                 ProgramPath = string.Empty;
                 RunMultipleInstances = false;
+                _editingHotkeyId = -1;;
             }
         }
         public async Task<bool> HasDuplicateCombination()
@@ -142,6 +144,7 @@ namespace HotkeyManager.ViewModels
             ModifierMask newModifier = SelectedModifier;
 
             bool hasDuplicate = hotkeys.Any(hotkey =>
+                hotkey.Id != _editingHotkeyId &&
                 hotkey.Modifier == newModifier &&
                 hotkey.Key == newKey);
             if (hasDuplicate) 
