@@ -104,15 +104,15 @@ namespace HotkeyManager.ViewModels
         public Hotkey Result { get; private set; }
         public event EventHandler<Hotkey> HotkeySaved;
     
-        public ICommand SelectProgramCommand { get; }
+        public ICommand SelectFileCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
         public AddEditViewModel( IHotkeyRepository hotkeyRepository)
         {
             _hotkeyRepository = hotkeyRepository;
-            LoadModifiers(); 
-            SelectProgramCommand = new RelayCommand(SelectProgramAsync);
+            LoadModifiers();
+            SelectFileCommand = new RelayCommand(SelectFileAsync);
             SaveCommand = new RelayCommand(SaveAsync); 
             CancelCommand = new RelayCommand(Cancel);
   
@@ -187,6 +187,28 @@ namespace HotkeyManager.ViewModels
                 ProgramPath = result[0];
             }
             
+        }
+        private async Task SelectFileAsync()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Оберіть файл для запуску",
+                AllowMultiple = false
+            };
+            dialog.Filters.Add(new FileDialogFilter
+            {
+                Name = "Файли",
+                Extensions = OperatingSystem.IsWindows()
+                    ? new() { "*" }
+                    : new() { "*", "" }
+            });
+            var window = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            var result = await dialog.ShowAsync(window);
+            if (result != null && result.Length > 0)
+            {
+                ProgramPath = result[0];
+            }
+
         }
 
         public KeyCode KeyCodeFromChar()

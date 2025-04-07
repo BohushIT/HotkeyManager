@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,17 +22,28 @@ namespace HotkeyManager.Services
             return false;
         }
 
-        public void StartProcess(string programPath)
+        public void StartProcess(string path)
         {
-            //if (IsProcessRunning(programPath))
-            //{
-            //    return; // Процес уже запущений
-            //}
+            try
+            {                
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true, 
+                    CreateNoWindow = false 
+                };
 
-            var process = Process.Start(programPath);
-            if (process != null)
-            {
-                _runningProcesses[programPath] = process;
+                var process = Process.Start(startInfo);
+                if (process != null)
+                {
+                    _runningProcesses[path] = process;
+
+                }
+            }
+            catch (Exception ex)
+            {               
+                File.AppendAllText("hotkeymanager_log.txt", $"Помилка при запуску {path}: {ex.Message}\n");
+                throw new InvalidOperationException($"Не вдалося відкрити {path}: {ex.Message}", ex);
             }
         }
 

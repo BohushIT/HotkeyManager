@@ -127,11 +127,17 @@
                          Height="35" Width="150"
                          Text="{Binding ProgramPath}"
                          VerticalAlignment="Center"/>
-				<Button Grid.Column="0" Grid.Row="3"
+				<!--<Button Grid.Column="0" Grid.Row="3"
                         Height="35" Width="60"
                         HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Command="{Binding SelectProgramCommand}"
-                        Content="..."/>
+                        Command="{Binding SelectFileCommand}"
+                        Content="..."/>-->
+				<Menu Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+					<MenuItem Header="...">
+						<MenuItem Header="Вибрати програму або файл" Command="{Binding SelectFileCommand}"/>
+						<MenuItem Header="Вибрати команду" Command="{Binding SelectFileCommand}"/>
+					</MenuItem>
+				</Menu>
 
 				<CheckBox Grid.Column="0" Grid.Row="4" IsChecked="{Binding RunMultipleInstances}"
 				  HorizontalAlignment="Center" />
