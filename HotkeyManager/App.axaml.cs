@@ -121,6 +121,11 @@ namespace HotkeyManager
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();
+                if (_mainWindow.DataContext is MainWindowViewModel viewModel)
+                {
+                    viewModel.Dispose();
+                    File.AppendAllText("hotkeymanager_log.txt", " Очищення при завершенні програми ShutdownRequested \n");
+                }
             }
         }
     }
