@@ -22,7 +22,7 @@ namespace HotkeyManager.Platform.Windows
                 if (windowProcessId == process.Id)
                 {
                     foundHWnd = hWnd;
-                    return false; // Зупинити перебір
+                    return false; 
                 }
                 return true;
             }, IntPtr.Zero);
@@ -55,8 +55,8 @@ namespace HotkeyManager.Platform.Windows
 
             Process windowProcess = null;
             bool isInitialProcessActive = true;
-            int maxWindowWaitMs = 5000; // Максимальний час очікування 5 секунд
-            int checkIntervalMs = 500; // Перевіряти кожні 0.5 секунди
+            int maxWindowWaitMs = 5000; 
+            int checkIntervalMs = 500; 
             int waitedTimeMs = 0;
 
             while (waitedTimeMs < maxWindowWaitMs)
