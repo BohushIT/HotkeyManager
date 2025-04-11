@@ -195,6 +195,7 @@ namespace HotkeyManager.ViewModels
                     var programPath = matchingHotkey.ProgramPath;
                     if (_processService.IsProcessRunning(programPath) && !matchingHotkey.RunMultipleInstances)
                     {
+                        _processService.TryActivateWindow(programPath);
                         Status = $"{Path.GetFileName(programPath)} вже запущено";
                         return;
                     }

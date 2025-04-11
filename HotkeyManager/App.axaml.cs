@@ -13,6 +13,10 @@ using System.IO;
 using System.Windows.Input;
 using HotkeyManager.Commands;
 using HotkeyManager.Services.Interfaces;
+using HotkeyManager.Platform.Interfaces;
+using System.Runtime.InteropServices;
+using HotkeyManager.Platform.Windows;
+using HotkeyManager.Platform.Linux;
 
 namespace HotkeyManager
 {
@@ -91,7 +95,10 @@ namespace HotkeyManager
                 DataContext = provider.GetRequiredService<MainWindowViewModel>()
             });
             services.AddTransient<AddEditViewModel>();
-
+            services.AddSingleton<IProcessActivator>(sp =>
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? new WindowsProcessActivator()
+                    : new LinuxProcessActivator());
             return services.BuildServiceProvider();
         }
 
