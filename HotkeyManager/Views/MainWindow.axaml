@@ -141,7 +141,7 @@
 									CanUserResize="True"
 									CanUserSort="False"/>
 				<DataGridTextColumn Header="Програма"
-									Binding="{Binding ProgramPath}"
+									Binding="{Binding ProgramPathString}"
 									Width="220"
 									CanUserResize="True"
 									CanUserSort="False" 

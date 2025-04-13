@@ -1,6 +1,7 @@
 ﻿using SharpHook.Native;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -27,5 +28,6 @@ namespace HotkeyManager.Models
             RunMultipleInstances = runMultipleInstances; 
         }
         public string KeyString => Key.ToString().Substring(2);
+        public string ProgramPathString => Path.GetFileName(ProgramPath);
     }
 }
