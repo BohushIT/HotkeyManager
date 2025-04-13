@@ -88,7 +88,8 @@ namespace HotkeyManager
             services.AddSingleton<IConfigurationService, ConfigurationService>();
             services.AddScoped<IHotkeyRepository, JsonHotkeyRepository>();
             services.AddScoped<IWindowService, WindowService>(); 
-            services.AddScoped<IProcessService, ProcessService>(); 
+            services.AddScoped<IProcessService, ProcessService>();
+            services.AddSingleton<AutoStartService>();
             services.AddScoped<MainWindowViewModel>();
             services.AddTransient<MainWindow>(provider => new MainWindow
             {

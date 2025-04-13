@@ -39,9 +39,12 @@
 						
 						 />
 				<Button Content="Редагувати" Command="{Binding EditHotkeyCommand}"
-						Margin="5" Width="100" HorizontalAlignment="Center"
-						
-					     />				
+						Margin="5" Width="100" HorizontalAlignment="Center"/>
+
+				<CheckBox Content="Запускати програму при старті Windows"
+			  HorizontalAlignment="Center"
+			   Margin="0,0,0,10"
+						  IsChecked="{Binding IsAutoStartEnabled}"/>				
 			</StackPanel>
 
 			<!-- Таблиця гарячих клавіш -->

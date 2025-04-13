@@ -4,11 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  
     <ApplicationIcon>Assets\MainIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -33,27 +30,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Remove="Papirus-Team-Papirus-Apps-Preferences-desktop-keyboard-shortcuts.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Assets\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\MainIcon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="SkiaSharp" />
-    <TrimmerRootAssembly Include="HarfBuzzSharp" />
+    <Content Include="Assets\MainIcon.ico" />
   </ItemGroup>
 </Project>

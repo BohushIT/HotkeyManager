@@ -38,7 +38,11 @@ namespace HotkeyManager.ViewModels
         private Hotkey _selectedHotkey;
         private readonly IWindowService _windowService;
         private bool _disposed = false;
-        public MainWindowViewModel( IHotkeyRepository repository, IWindowService windowService, IProcessService processService)
+
+
+        private readonly AutoStartService _autoStartService;
+        private bool _isAutoStartEnabled;
+        public MainWindowViewModel( IHotkeyRepository repository, IWindowService windowService, IProcessService processService, AutoStartService autoStartService)
         {
            
             _repository = repository;
@@ -54,11 +58,46 @@ namespace HotkeyManager.ViewModels
             AddHotkeyCommand = new RelayCommand(async () => await AddHotkeyAsync());
             RemoveHotkeyCommand = new RelayCommand(async () => await RemoveHotkeyAsync());
             EditHotkeyCommand = new RelayCommand(async () => await EditHotkeyAsync());
-   
+
+            _autoStartService = autoStartService;
+             _isAutoStartEnabled = _autoStartService.IsAutoStartEnabled();
+            ToggleAutoStartCommand = new RelayCommand(ExecuteToggleAutoStart);
         }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(AutoStartService autoStartService)
         {
+            
+        }
+        public bool IsAutoStartEnabled
+        {
+            get => _isAutoStartEnabled;
+            set
+            {
+                if (_isAutoStartEnabled != value)
+                {
+                    _isAutoStartEnabled = value;
+                    OnPropertyChanged();
+                    try
+                    {
+                        _autoStartService.SetAutoStart(value);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Відновлюємо стан при помилці
+                        _isAutoStartEnabled = !value;
+                        OnPropertyChanged();
+                        // У реальному проєкті показати через UI
+                        Console.WriteLine($"Помилка автозавантаження: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        public ICommand ToggleAutoStartCommand { get; }
+
+        private void ExecuteToggleAutoStart(object parameter)
+        {
+            IsAutoStartEnabled = !IsAutoStartEnabled;
         }
         private async Task InitializeAsync()
         {
