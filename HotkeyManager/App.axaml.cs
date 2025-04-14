@@ -40,7 +40,7 @@ namespace HotkeyManager
             AvaloniaXamlLoader.Load(this);
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public override async void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -55,21 +55,13 @@ namespace HotkeyManager
                         viewModel.Dispose();
                         File.AppendAllText("hotkeymanager_log.txt", " Очищення при завершенні програми ShutdownRequested \n");
                     }
+                    _serviceProvider.GetRequiredService<SystemTrayService>().Dispose();
                 };
 
-                var trayIcon = new TrayIcon
-                {
-                    Icon = new WindowIcon("Assets/MainIcon.ico"),
-                    ToolTipText = "Hotkey Manager",
-                    Menu = new NativeMenu
-                    {
-                        new NativeMenuItem { Header = "Відкрити програму", Command = OpenCommand },
-                        new NativeMenuItem { Header = "Закрити програму", Command = ExitCommand }
-                    }
-                };
-
-
-                TrayIcon.SetIcons(this, new TrayIcons { trayIcon });
+                var viewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
+                var trayService = _serviceProvider.GetRequiredService<SystemTrayService>();
+                await viewModel.InitializeAsync(); // Чекаємо завершення
+                trayService.Initialize();
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -99,6 +91,12 @@ namespace HotkeyManager
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                     ? new WindowsProcessActivator()
                     : new LinuxProcessActivator());
+            services.AddSingleton<SystemTrayService>(sp => new SystemTrayService(
+                OpenCommand, 
+                ExitCommand,
+                sp.GetRequiredService<MainWindowViewModel>(),
+               sp.GetRequiredService<IProcessService>()));
+
             return services.BuildServiceProvider();
         }
 

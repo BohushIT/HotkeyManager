@@ -40,16 +40,16 @@ namespace HotkeyManager.ViewModels
         private bool _disposed = false;
         public MainWindowViewModel( IHotkeyRepository repository, IWindowService windowService, IProcessService processService)
         {
-           
+            _hotkeys = new ObservableCollection<Hotkey>();
             _repository = repository;
             _windowService = windowService;
             _processService = processService;
-            _hotkeys = new ObservableCollection<Hotkey>();
+            
 
             GlobalHookService.Instance.KeyPressed += OnKeyPressed;
             GlobalHookService.Instance.KeyReleased += OnKeyReleased;
 
-            _ = InitializeAsync();
+           
 
             AddHotkeyCommand = new RelayCommand(async () => await AddHotkeyAsync());
             RemoveHotkeyCommand = new RelayCommand(async () => await RemoveHotkeyAsync());
@@ -60,11 +60,11 @@ namespace HotkeyManager.ViewModels
         public MainWindowViewModel()
         {
         }
-        private async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             try
             {
-                var loadedHotkeys = await _repository.LoadAsync();
+                var loadedHotkeys = await _repository.LoadAsync() ?? Enumerable.Empty<Hotkey>();
                 foreach (var hotkey in loadedHotkeys) 
                 {
                     _hotkeys.Add(hotkey);
