@@ -1,4 +1,5 @@
 ﻿using SharpHook;
+using SharpHook.Providers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,18 +11,17 @@ namespace HotkeyManager.Services
 {
     public class GlobalHookService : IDisposable
     {
-        // Єдиний екземпляр класу (Singleton)
         private static readonly GlobalHookService _instance = new GlobalHookService();
-
-        // Об'єкт хука з SharpHook
         private readonly TaskPoolGlobalHook _hook;
-
-        // Приватний конструктор для Singleton
         private GlobalHookService()
         {
-            _hook = new TaskPoolGlobalHook();
+            _hook = new TaskPoolGlobalHook(
+                            globalHookType: GlobalHookType.Keyboard,                           
+                            runAsyncOnBackgroundThread: true 
+                        );
             _hook.KeyPressed += Hook_KeyPressed; 
-            _hook.KeyReleased += Hook_KeyReleased; 
+            _hook.KeyReleased += Hook_KeyReleased;
+
             _hook.RunAsync(); 
       
         }
