@@ -14,19 +14,18 @@ namespace HotkeyManager.Commands
         private readonly bool _preventConcurrentExecution;
         private bool _isExecuting;
 
-        // Для асинхронних команд
+
         public RelayCommand(Func<Task> executeAsync, Func<bool> canExecute = null, bool preventConcurrentExecution = false)
             : this(p => executeAsync(), p => canExecute?.Invoke() ?? true, preventConcurrentExecution)
         {
         }
 
-        // Для синхронних команд
+
         public RelayCommand(Action execute, Func<bool> canExecute = null, bool preventConcurrentExecution = false)
             : this(p => { execute(); return Task.CompletedTask; }, p => canExecute?.Invoke() ?? true, preventConcurrentExecution)
         {
         }
 
-        // Загальний конструктор
         private RelayCommand(Func<object, Task> executeAsync, Func<object, bool> canExecute, bool preventConcurrentExecution)
         {
             _executeAsync = executeAsync ?? throw new ArgumentNullException(nameof(executeAsync));

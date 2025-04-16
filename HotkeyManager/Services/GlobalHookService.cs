@@ -12,7 +12,13 @@ namespace HotkeyManager.Services
     public class GlobalHookService : IDisposable
     {
         private static readonly GlobalHookService _instance = new GlobalHookService();
+<<<<<<< Updated upstream
         private readonly TaskPoolGlobalHook _hook;
+=======
+
+        private readonly TaskPoolGlobalHook _hook;
+
+>>>>>>> Stashed changes
         private GlobalHookService()
         {
             _hook = new TaskPoolGlobalHook(

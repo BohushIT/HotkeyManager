@@ -69,7 +69,6 @@ namespace HotkeyManager.Platform.Linux
                 File.AppendAllText("hotkeymanager_log.txt", $"Failed: No valid MainWindowHandle for {process.ProcessName} (PID: {process.Id}, Handle: {process.MainWindowHandle}). Falling back to xdotool.\n");
             }
 
-            // Початкова затримка перед xdotool
             Thread.Sleep(InitialDelayMs);
 
             // Універсальна спроба активації через xdotool за PID

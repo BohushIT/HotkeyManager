@@ -69,7 +69,7 @@ namespace HotkeyManager.Repositories
         public async Task EditHotKeyAsync(Hotkey oldHotkey, Hotkey newHotkey)
         {
             var hotkeys = await LoadAsync();
-            int indexToEdit = hotkeys.ToList().FindIndex(h => h.Id == oldHotkey.Id); // Перетворюємо в List і шукаємо індекс
+            int indexToEdit = hotkeys.ToList().FindIndex(h => h.Id == oldHotkey.Id); 
             if (indexToEdit != -1)
             {
                 newHotkey.Id = oldHotkey.Id;

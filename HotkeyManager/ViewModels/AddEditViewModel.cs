@@ -42,14 +42,13 @@ namespace HotkeyManager.ViewModels
         {
             get => _keyText;
             set
-            {
-                // Перевіряємо, чи введено лише одну літеру
+            {                
                 if (!string.IsNullOrEmpty(value) &&  !Regex.IsMatch(value, @"^[a-zA-Z0-9]$"))
                 {
                     ErrorMessageVisible = true;
                     ErrorMessage = "Дозволяється лише одна англійська літера або одна цифра";
 
-                    return; // Не дозволяємо змінювати значення
+                    return; 
                 }
 
                 _keyText = value;
