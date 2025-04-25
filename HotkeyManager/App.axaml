@@ -19,20 +19,13 @@
 			<Setter Property="BorderBrush" Value="Gray"/>
 			<Setter Property="CornerRadius" Value="4"/>
 
-
-			<!-- Анімації -->
 			<Setter Property="Transitions">
 				<Transitions>
 					<BrushTransition Property="Background" Duration="0:0:0.2"/>
-					<!-- Фон -->
 					<BrushTransition Property="Foreground" Duration="0:0:0.2"/>
-					<!-- Текст -->
 					<DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
-					<!-- Прозорість -->
 				</Transitions>
 			</Setter>
-
-			<!-- Кастомний шаблон для професійного вигляду -->
 			<Setter Property="Template">
 				<ControlTemplate>
 					<Border Background="{TemplateBinding Background}"
@@ -51,42 +44,28 @@
 
 		<Style Selector="Button:pointerover">
 			<Setter Property="Background" Value="#C0D5D0"/>
-
 			<Setter Property="Cursor" Value="Hand"/>
-
 		</Style>
-
-		<!-- Ефект при натисканні -->
 		<Style Selector="Button:pressed">
 			<Setter Property="Background" Value="#6D8C85"/>
-		
 			<Setter Property="Opacity" Value="0.9"/>
-			
 		</Style>
-
-		<!-- Стиль для вимкнених кнопок -->
 		<Style Selector="Button:disabled">
 			<Setter Property="Background" Value="#D3D3D3"/>
-			<!-- Сірий для вимкнених -->
 			<Setter Property="Foreground" Value="#A0A0A0"/>
 			<Setter Property="Opacity" Value="0.6"/>
 		</Style>
 		<Style Selector="Window">
 			<Setter Property="Background" Value="#FFFFFF"/>
-			<!-- Білий фон -->
 		</Style>
 
 		<Style Selector="TextBox.customClass">
-			<!-- Звичайний стан -->
 			<Setter Property="BorderBrush" Value="Gray" />
 			<Setter Property="BorderThickness" Value="1" />
 		</Style>
 		<Style Selector="TextBox.customClass:focus">
-			<!-- Стан із фокусом -->
 			<Setter Property="BorderBrush" Value="Blue" />
-			<!-- Колір рамки при фокусі -->
 			<Setter Property="BorderThickness" Value="2" />
-			<!-- Опціонально: товщина рамки -->
 		</Style>
 	</Application.Styles>
 </Application>
